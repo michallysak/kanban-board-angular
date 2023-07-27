@@ -1,23 +1,6 @@
 <div class="kanban-board">
-
-  <div class="kanban-board__column">
-    <div class="task-card">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam cumque dignissimos molestias culpa quasi architecto quaerat est nostrum. Iste autem quis harum rem velit nam quos ad deleniti at aliquam.</div>
-    <div class="task-card">Delectus possimus alias vel dolores voluptate, ipsa voluptatum natus, numquam animi corporis itaque sunt ex aut recusandae laudantium necessitatibus commodi. Et ab nisi saepe provident soluta dolorem quod eos. Libero!</div>
-    <div class="task-card">Recusandae omnis repellat dicta dignissimos ducimus magnam odio quibusdam asperiores veritatis doloribus, vero blanditiis magni tenetur quasi quisquam officia tempore aspernatur ab accusantium quam. Quis id sequi debitis quae error!</div>
-  </div>
-  <div class="kanban-board__column">
-    <div class="task-card">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolore, quos maiores. Enim dolore cumque et in facere saepe animi vero, eligendi asperiores labore, fugit culpa ab libero rem eos. Voluptate.</div>
-    <div class="task-card">Sed est quidem dignissimos voluptatum? Quaerat dignissimos sapiente quis magni, animi delectus repudiandae, voluptatibus illo culpa quos eum voluptas dolor obcaecati beatae minus deserunt est incidunt excepturi recusandae architecto maxime.</div>
-    <div class="task-card">Reiciendis, iste unde repellendus officiis praesentium ipsam iure repellat odio inventore accusamus optio voluptates, facilis, amet cupiditate enim eos ab! Soluta sapiente suscipit delectus. Sequi placeat reprehenderit sit consequatur assumenda.</div>
-  </div>
-  <div class="kanban-board__column">
-    <div class="task-card">Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic omnis odit qui suscipit ut velit blanditiis nihil ab quibusdam esse consequatur temporibus fugit, eligendi magni eum dicta voluptas illum impedit!</div>
-    <div class="task-card">Eveniet possimus aliquid temporibus consequuntur! Explicabo, esse sunt repudiandae perferendis pariatur aut vel. Explicabo suscipit eum delectus fugiat similique? Molestiae nemo possimus obcaecati unde, minus aperiam natus maiores doloribus nostrum!</div>
-    <div class="task-card">Omnis cum commodi illo id vel similique nisi ad aut quo delectus libero error velit, vero qui ipsum necessitatibus maiores repudiandae possimus! Officia esse rem beatae fuga, harum cumque excepturi?</div>
-  </div>
-  <div class="kanban-board__column">
-    <div class="task-card">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem eveniet veritatis possimus fuga ea aut nemo laborum. Cupiditate placeat, odio atque, sapiente, vero sit nostrum commodi molestiae repellendus quam accusamus!</div>
-    <div class="task-card">Saepe eaque rem consequuntur labore magni. Voluptatum, officiis tempore. Placeat reiciendis aut ducimus voluptates assumenda deserunt ipsa ab quidem quae. Reiciendis nihil voluptates quisquam aliquid eveniet tempore! Aliquam, facere rem!</div>
-    <div class="task-card">Sit, provident veritatis. Dolores impedit excepturi voluptas repellat dolorum illum distinctio reprehenderit voluptatibus placeat, nemo, voluptatum corrupti neque delectus eius quis iste minus! Tempore suscipit iste consequatur! Sequi, maxime adipisci.</div>
+  <div class="kanban-board__column" *ngFor="let column of kanbanBoardColumns">
+    <h3>{{column.name}}</h3>
+    <app-task-card *ngFor="let task of column.tasks" [taskCard]="task" />
   </div>
 </div>

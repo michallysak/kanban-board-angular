@@ -1,0 +1,19 @@
+.task-card {
+  cursor: pointer;
+  min-width: 250px;
+  max-width: 350px;
+  max-height: 150px;
+  border: 2px black solid;
+  padding: 10px;
+  margin: 5px;
+  text-align: center;
+  border-radius: 10px;
+  user-select: none;
+
+  &__title {
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+  }
+}
