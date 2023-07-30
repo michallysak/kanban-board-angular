@@ -1,7 +1,7 @@
-import { TaskCard } from "../task-card/task-card.model";
+import { TaskCard } from '../task-card/task-card.model';
 
 export interface KanbanBoardColumn {
-  id: string,
-  name: string,
-  tasks: TaskCard[]
+  id: string;
+  name: string;
+  tasks: TaskCard[];
 }

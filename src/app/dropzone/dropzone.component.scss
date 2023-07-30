@@ -1,0 +1,16 @@
+.dropzone {
+
+  &.full-height {
+    height: 100% !important;
+  }
+  height: 2px;
+  padding: 1px 0;
+  background-color: transparent;
+
+  &.dragover {
+    height: 4px;
+    padding: 0px 0;
+    background-color: #01a2ff63;
+    transition: 0.3s;
+  }
+}

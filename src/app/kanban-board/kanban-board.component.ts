@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { MoveTask } from '../dropzone/dropzone.model';
+import { TaskCard } from '../task-card/task-card.model';
+import { initialKanbanBoardColumn } from './kanban-board.data';
 import { KanbanBoardColumn } from './kanban-board.model';
 
 @Component({
@@ -7,42 +10,169 @@ import { KanbanBoardColumn } from './kanban-board.model';
   styleUrls: ['./kanban-board.component.scss'],
 })
 export class KanbanBoardComponent {
-  kanbanBoardColumns: KanbanBoardColumn[] = [
-    {
-      id: 'c27cda8b-81d3-458a-9a2e-0ad53e8e011e',
-      name: 'TODO',
-      tasks: [
-        {
-          id: 'deba1012-88f2-494f-9ed3-a9fc00718cc1',
-          title: 'Todo task',
-          description:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi incidunt, dolores possimus, optio, ducimus officiis a placeat ratione molestiae dolore expedita quisquam aliquid facere. Voluptatem, assumenda. Laboriosam tempora accusamus soluta.',
-        },
-      ],
-    },
-    {
-      id: '777e0771-7601-4fb6-b78c-046db4cbdeba',
-      name: 'In-progress',
-      tasks: [
-        {
-          id: '45e25fc0-53fc-4040-b0d7-7a395bcfea00',
-          title: 'In-progress task',
-          description:
-            'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Error possimus iure voluptate tenetur, quaerat deleniti autem quisquam, reprehenderit incidunt quibusdam ex? Rerum, vel quibusdam nesciunt iste doloribus amet quod aperiam!',
-        },
-      ],
-    },
-    {
-      id: '142d6952-906e-4f4e-8443-8a220df94d7c',
-      name: 'Done',
-      tasks: [
-        {
-          id: 'fa00adb6-f80a-4afa-b4da-f025e673f421',
-          title: 'Done task',
-          description:
-            'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Omnis et minima ad perspiciatis harum, quisquam neque quibusdam asperiores ipsam, voluptatum expedita rerum consectetur laborum animi tempora, officia amet aliquam dolorem.',
-        },
-      ],
-    },
-  ];
+  kanbanBoardColumns: KanbanBoardColumn[] = initialKanbanBoardColumn;
+
+  private draggedTask: { columnId: string; taskId: string } | undefined;
+
+  dragStart(columnId: string, taskId: string) {
+    this.draggedTask = { columnId, taskId };
+  }
+
+  dragEnd(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  taskDrop(moveTask: MoveTask) {
+    moveTask.columnId !== this.draggedTask?.columnId
+      ? this.moveTaskBetweenColumns(this.kanbanBoardColumns, moveTask)
+      : this.moveTaskInSingleColumn(this.kanbanBoardColumns, moveTask);
+  }
+
+  private moveTaskBetweenColumns(
+    kanbanBoardColumns: KanbanBoardColumn[],
+    moveTask: MoveTask
+  ) {
+    const kanbanBoardColumnSource = kanbanBoardColumns.find(
+      column => column.id == this.draggedTask?.columnId
+    );
+    const kanbanBoardColumnDestination = kanbanBoardColumns.find(
+      column => column.id == moveTask.columnId
+    );
+    if (!kanbanBoardColumnSource || !kanbanBoardColumnDestination) {
+      return;
+    }
+
+    const editedColumns = kanbanBoardColumns.map(column => {
+      if (column.id === this.draggedTask?.columnId) {
+        return this.removeTaskFromSourceColumn(
+          kanbanBoardColumnSource,
+          this.draggedTask?.taskId
+        );
+      }
+      if (column.id === moveTask.columnId) {
+        return this.computePositionIndestinationColumn(
+          kanbanBoardColumnSource.tasks,
+          kanbanBoardColumnDestination,
+          moveTask
+        );
+      }
+      return column;
+    });
+
+    this.kanbanBoardColumns = editedColumns;
+    this.draggedTask = undefined;
+  }
+
+  private removeTaskFromSourceColumn(
+    kanbanBoardColumnSource: KanbanBoardColumn,
+    taskId: string
+  ) {
+    return {
+      id: kanbanBoardColumnSource.id,
+      name: kanbanBoardColumnSource.name,
+      tasks: kanbanBoardColumnSource.tasks.filter(task => task.id !== taskId),
+    };
+  }
+
+  private computePositionIndestinationColumn(
+    kanbanBoardColumnSourceTasks: TaskCard[],
+    kanbanBoardColumnDestination: KanbanBoardColumn,
+    moveTask: MoveTask
+  ) {
+    const newTasks = [...kanbanBoardColumnDestination.tasks];
+
+    const newIndex =
+      newTasks.length === 0
+        ? 0
+        : moveTask.type === 'before'
+        ? newTasks.findIndex(taskCard => taskCard.id === moveTask.id) - 1
+        : newTasks.length - 1;
+
+    const oldIndex = kanbanBoardColumnSourceTasks.findIndex(
+      taskCard => taskCard.id === this.draggedTask?.taskId
+    );
+
+    const task = kanbanBoardColumnSourceTasks[oldIndex];
+    let editedTasks: TaskCard[];
+    if (newTasks.length === 0) {
+      editedTasks = [task];
+    } else {
+      editedTasks = [...newTasks];
+      editedTasks.splice(newIndex + 1, 0, task);
+    }
+
+    return {
+      id: kanbanBoardColumnDestination.id,
+      name: kanbanBoardColumnDestination.name,
+      tasks: editedTasks,
+    };
+  }
+
+  private moveTaskInSingleColumn(
+    kanbanBoardColumns: KanbanBoardColumn[],
+    moveTask: MoveTask
+  ) {
+    const draggedTaskColumn = kanbanBoardColumns.find(
+      column => column.id === moveTask.columnId
+    );
+    if (!draggedTaskColumn) {
+      return;
+    }
+    const tasks = [...draggedTaskColumn.tasks];
+
+    const editedColumns = kanbanBoardColumns.map(column => {
+      if (column.id !== draggedTaskColumn.id) {
+        return column;
+      }
+
+      return this.computeMoveTaskInSingleColumn(
+        tasks,
+        moveTask,
+        draggedTaskColumn
+      );
+    });
+    this.kanbanBoardColumns = editedColumns;
+    this.draggedTask = undefined;
+  }
+
+  private computeMoveTaskInSingleColumn(
+    tasks: TaskCard[],
+    moveTask: MoveTask,
+    draggedTaskColumn: KanbanBoardColumn
+  ): KanbanBoardColumn {
+    let newIndex =
+      tasks.length === 0
+        ? 0
+        : moveTask.type === 'before'
+        ? tasks.findIndex(taskCard => taskCard.id === moveTask.id) - 1
+        : tasks.length - 1;
+
+    const oldIndex = tasks.findIndex(
+      taskCard => taskCard.id === this.draggedTask?.taskId
+    );
+
+    if (oldIndex > newIndex) {
+      newIndex++;
+    }
+
+    if (
+      oldIndex < 0 ||
+      oldIndex >= tasks.length ||
+      newIndex < 0 ||
+      newIndex >= tasks.length ||
+      oldIndex === newIndex
+    ) {
+      return draggedTaskColumn;
+    }
+
+    const editedTasks = [...tasks];
+    const [element] = editedTasks.splice(oldIndex, 1);
+    editedTasks.splice(newIndex, 0, element);
+
+    return {
+      id: draggedTaskColumn.id,
+      name: draggedTaskColumn.name,
+      tasks: editedTasks,
+    };
+  }
 }

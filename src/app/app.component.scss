@@ -1,4 +1,12 @@
 .page-container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
+
+  &__title {
+    text-align: center;
+  }
+  &__kanban-board {
+    flex: 1;
+  }
 }

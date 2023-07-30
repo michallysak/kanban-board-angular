@@ -1,6 +1,18 @@
 <div class="kanban-board">
   <div class="kanban-board__column" *ngFor="let column of kanbanBoardColumns">
-    <h3>{{column.name}}</h3>
-    <app-task-card *ngFor="let task of column.tasks" [taskCard]="task" />
+    <h3>{{ column.name }}</h3>
+    <div style="display: flex; flex-direction: column;">
+    <ng-container *ngFor="let task of column.tasks">
+      <app-dropzone
+        (itemDrop)="taskDrop({ columnId: column.id,type: 'before', id: task.id })" />
+      <app-task-card
+        (dragstart)="dragStart(column.id, task.id)"
+        [taskCard]="task" />
+    </ng-container>
+    </div>
+    <app-dropzone
+     class="kanban-board__column__last-dropzone"
+      [fullHeight]="true"
+      (itemDrop)="taskDrop({ columnId: column.id, type: 'end' })" />
   </div>
 </div>
