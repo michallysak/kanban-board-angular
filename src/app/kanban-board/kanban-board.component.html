@@ -4,9 +4,9 @@
     <div style="display: flex; flex-direction: column;">
     <ng-container *ngFor="let task of column.tasks">
       <app-dropzone
-        (itemDrop)="taskDrop({ columnId: column.id,type: 'before', id: task.id })" />
+        (itemDrop)="taskDrop({ columnId: column.id, type: 'before', id: task.id })" />
       <app-task-card
-        (dragstart)="dragStart(column.id, task.id)"
+        (dragTask)="taskDragged(column.id, task.id)"
         [taskCard]="task" />
     </ng-container>
     </div>

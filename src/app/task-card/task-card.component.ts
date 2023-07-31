@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TaskCard } from './task-card.model';
 
 @Component({
@@ -9,4 +9,9 @@ import { TaskCard } from './task-card.model';
 export class TaskCardComponent {
   @Input({required: true}) taskCard!: TaskCard;
 
+  @Output() dragTask = new EventEmitter<void>();
+
+  dragStart() {
+    this.dragTask.emit();
+  }
 }

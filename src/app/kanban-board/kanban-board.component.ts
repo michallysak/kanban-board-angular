@@ -14,12 +14,8 @@ export class KanbanBoardComponent {
 
   private draggedTask: { columnId: string; taskId: string } | undefined;
 
-  dragStart(columnId: string, taskId: string) {
+  taskDragged(columnId: string, taskId: string) {
     this.draggedTask = { columnId, taskId };
-  }
-
-  dragEnd(event: DragEvent) {
-    event.preventDefault();
   }
 
   taskDrop(moveTask: MoveTask) {
