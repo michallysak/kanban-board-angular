@@ -1,0 +1,33 @@
+.create-task-dialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__content {
+    width: auto;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+    width: 600px;
+    height: 300px;
+    border-radius: 15px;
+    border: black 2px ridge;
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+
+      &__close-button {
+        align-self: center;
+      }
+    }
+  }
+}

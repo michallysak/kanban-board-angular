@@ -1,6 +1,8 @@
 <div class="page-container">
   <div class="page-container__title">
-    <h1>{{ title }}</h1>
+    <h1>{{ title }}<button (click)="toggleCreateTaskDialogShow(true)">on</button></h1>
   </div>
   <app-kanban-board  class="page-container__kanban-board"/>
+  <app-create-task-dialog [show]="showCreateTaskDialog" (exit)="toggleCreateTaskDialogShow(false)">
+  </app-create-task-dialog>
 </div>

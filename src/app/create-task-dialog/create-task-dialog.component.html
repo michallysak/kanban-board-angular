@@ -1,0 +1,13 @@
+<div class="create-task-dialog" [@fade]="show" (click)="clickOutside()">
+  <div class="create-task-dialog__content" (click)="clickInside($event)">
+    <div class="create-task-dialog__content__header">
+      <p class="create-task-dialog__content__header__title" >
+        create-task-dialog works!
+      </p>
+      <button class="create-task-dialog__content__close-button"  (click)="clickClose()">
+        x
+      </button>
+    </div>
+
+  </div>
+</div>

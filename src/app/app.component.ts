@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'KanbanBoardAngular';
+  showCreateTaskDialog = true;
+
+  toggleCreateTaskDialogShow(show: boolean) {
+    this.showCreateTaskDialog = show;
+  }
 }

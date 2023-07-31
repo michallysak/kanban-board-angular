@@ -6,10 +6,12 @@ import { AppComponent } from './app.component';
 import { KanbanBoardComponent } from './kanban-board/kanban-board.component';
 import { TaskCardComponent } from './task-card/task-card.component';
 import { DropzoneComponent } from './dropzone/dropzone.component';
+import { CreateTaskDialogComponent } from './create-task-dialog/create-task-dialog.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
-  declarations: [AppComponent, KanbanBoardComponent, TaskCardComponent, DropzoneComponent],
-  imports: [BrowserModule, AppRoutingModule],
+  declarations: [AppComponent, KanbanBoardComponent, TaskCardComponent, DropzoneComponent, CreateTaskDialogComponent],
+  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule],
   providers: [],
   bootstrap: [AppComponent],
 })
