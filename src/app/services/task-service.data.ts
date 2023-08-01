@@ -1,6 +1,6 @@
-import { KanbanBoardColumn } from "./kanban-board.model";
+import { KanbanBoardColumnTasks } from "../kanban-board/kanban-board.model";
 
-export const initialKanbanBoardColumn: KanbanBoardColumn[] = [
+export const initialKanbanBoardColumn: KanbanBoardColumnTasks[] = [
   {
     id: 'c27cda8b-81d3-458a-9a2e-0ad53e8e011e',
     name: 'TODO',

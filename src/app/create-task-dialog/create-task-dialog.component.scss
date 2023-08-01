@@ -29,5 +29,22 @@
         align-self: center;
       }
     }
+
+    &__body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    &__form {
+      width: 100%;
+
+      &-control {
+        width: 95%;
+
+        > * {
+          width: 95%;
+        }
+      }
+    }
   }
 }

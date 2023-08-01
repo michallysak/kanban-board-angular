@@ -1,13 +1,39 @@
-<div class="create-task-dialog" [@fade]="show" (click)="clickOutside()">
-  <div class="create-task-dialog__content" (click)="clickInside($event)">
+<div class="create-task-dialog" [@fade]="show" (click)="clickOutside()" (keyup)="handleKeyUp($event)" tabindex="-1">
+  <!-- Add tabindex to make the element focusable -->
+  <div class="create-task-dialog__content" (click)="clickInside($event)" tabindex="-1" (keyup)="handleKeyUp($event)">
     <div class="create-task-dialog__content__header">
-      <p class="create-task-dialog__content__header__title" >
-        create-task-dialog works!
+      <p class="create-task-dialog__content__header__title">
+        Create new task
       </p>
-      <button class="create-task-dialog__content__close-button"  (click)="clickClose()">
+      <button class="create-task-dialog__content__close-button" (click)="clickClose()" (keyup)="handleKeyUp($event)">
         x
       </button>
     </div>
+    <div class="create-task-dialog__content__body">
+      <form [formGroup]="form" class="create-task-dialog__content__form" (ngSubmit)="onSubmit()">
+        <div class="create-task-dialog__content__form-control">
+          <label for="title">Title:</label>
+          <input id="title" formControlName="title" />
+        </div>
 
+        <div class="create-task-dialog__content__form-control">
+          <label for="column">Column:</label>
+          <select id="column" formControlName="column">
+            <option *ngFor="let column of kanbanBoardColumnsNamesAndIds$ | async" [value]="column.id">{{ column.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="create-task-dialog__content__form-control">
+          <label for="description">Description:</label>
+          <textarea id="description" formControlName="description"></textarea>
+        </div>
+
+        <div class="create-task-dialog__content__form-control">
+          <button type="submit" [disabled]="form.invalid">Create</button>
+        </div>
+
+      </form>
+    </div>
   </div>
 </div>

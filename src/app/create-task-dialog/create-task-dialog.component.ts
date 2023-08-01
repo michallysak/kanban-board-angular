@@ -5,7 +5,9 @@ import {
   animate,
   state,
 } from '@angular/animations';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-create-task-dialog',
@@ -20,20 +22,68 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     ]),
   ],
 })
-export class CreateTaskDialogComponent {
+export class CreateTaskDialogComponent implements OnInit {
   @Input({ required: true }) show = false;
-  @Output() exit = new EventEmitter<void>()
+  @Output() exit = new EventEmitter<void>();
+
+  kanbanBoardColumnsNamesAndIds$ =
+    this.taskService.kanbanBoardColumnsNamesAndIds$;
+  createTaskDialogDefualtColumn$ =
+    this.taskService.createTaskDialogDefualtColumn$;
+
+  constructor(
+    public fb: FormBuilder,
+    private taskService: TaskService
+  ) {}
+
+  form = this.fb.group({
+    title: this.fb.nonNullable.control('', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(10),
+    ]),
+    description: this.fb.nonNullable.control('', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(10),
+    ]),
+    column: ['', Validators.required],
+  });
+
+  ngOnInit() {
+    this.form.valueChanges.subscribe(x => console.log(x));
+    this.createTaskDialogDefualtColumn$.subscribe(
+      createTaskDialogDefualtColumn =>
+        this.form.patchValue({ column: createTaskDialogDefualtColumn })
+    );
+  }
+
+  onSubmit() {
+    if (this.form.valid) {
+      console.log(this.form.value);
+    }
+  }
 
   clickClose() {
-    this.exit.emit()
+    this.exitAndClearForm();
   }
 
   clickOutside() {
-    this.exit.emit()
+    this.exitAndClearForm();
+  }
+
+  exitAndClearForm() {
+    this.exit.emit();
+    this.form.reset();
   }
 
   clickInside(event: Event) {
     event.stopPropagation();
   }
 
+  handleKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.exitAndClearForm();
+    }
+  }
 }

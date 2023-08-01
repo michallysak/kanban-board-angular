@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TaskService } from './services/task.service';
 
 @Component({
   selector: 'app-root',
@@ -7,9 +8,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'KanbanBoardAngular';
-  showCreateTaskDialog = true;
+  showCreateTaskDialog$ = this.taskService.showCreateTaskDialog$;
 
-  toggleCreateTaskDialogShow(show: boolean) {
-    this.showCreateTaskDialog = show;
+  constructor(private taskService: TaskService) {}
+
+  exitCreateTaskDialogShow() {
+    this.taskService.toggleCreateTaskDialogShow(false);
   }
 }
