@@ -60,7 +60,13 @@ export class CreateTaskDialogComponent implements OnInit {
 
   onSubmit() {
     if (this.form.valid) {
+      this.taskService.createTask({
+        columnId: this.form.controls.column.value ?? '',
+        title: this.form.controls.title.value,
+        description: this.form.controls.description.value,
+      })
       console.log(this.form.value);
+      this.exitAndClearForm();
     }
   }
 

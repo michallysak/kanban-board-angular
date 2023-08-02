@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map} from 'rxjs';
+import { BehaviorSubject, Observable, map, take } from 'rxjs';
 import {
   DraggedTask,
   KanbanBoardColumn,
@@ -8,16 +8,20 @@ import {
 import { initialKanbanBoardColumn } from './task-service.data';
 import { MoveTask } from '../dropzone/dropzone.model';
 import { TaskCard } from '../task-card/task-card.model';
+import { CreateTask } from './task-service.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  kanbanBoardColumns$ =
-    new BehaviorSubject<KanbanBoardColumnTasks[]>(initialKanbanBoardColumn);
+  kanbanBoardColumns$ = new BehaviorSubject<KanbanBoardColumnTasks[]>(
+    initialKanbanBoardColumn
+  );
 
-  showCreateTaskDialog$ = new BehaviorSubject<boolean>(true);
-  createTaskDialogDefualtColumn$ = new BehaviorSubject<string | undefined>(undefined);
+  showCreateTaskDialog$ = new BehaviorSubject<boolean>(false);
+  createTaskDialogDefualtColumn$ = new BehaviorSubject<string | undefined>(
+    undefined
+  );
 
   kanbanBoardColumnsNamesAndIds$: Observable<KanbanBoardColumn[]> =
     this.kanbanBoardColumns$.pipe(
@@ -26,7 +30,38 @@ export class TaskService {
       )
     );
 
-  toggleCreateTaskDialogShow(show: boolean, columnId: string | undefined = undefined) {
+  createTask(createTask: CreateTask) {
+    this.kanbanBoardColumns$.pipe(take(1)).subscribe(kanbanBoardColumns => {
+      const edited = kanbanBoardColumns.map(column => {
+        if (column.id === createTask.columnId) {
+          return {
+            id: column.id,
+            name: column.name,
+            tasks: [
+              ...column.tasks,
+              {
+                id: this.generateUuid(),
+                title: createTask.title,
+                description: createTask.description,
+              },
+            ],
+          };
+        }
+
+        return column;
+      });
+      this.kanbanBoardColumns$.next(edited);
+    });
+  }
+
+  private generateUuid() {
+    return crypto.randomUUID()
+  }
+
+  toggleCreateTaskDialogShow(
+    show: boolean,
+    columnId: string | undefined = undefined
+  ) {
     this.createTaskDialogDefualtColumn$.next(columnId);
     this.showCreateTaskDialog$.next(show);
   }
