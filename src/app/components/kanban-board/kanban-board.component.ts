@@ -1,20 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MoveTask } from '../dropzone/dropzone.model';
 import { DraggedTask } from './kanban-board.model';
-import { TaskService } from '../services/task.service';
+import { TaskService } from '../../services/task.service';
 import { take } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
 
 @Component({
   selector: 'app-kanban-board',
   templateUrl: './kanban-board.component.html',
   styleUrls: ['./kanban-board.component.scss'],
 })
-export class KanbanBoardComponent {
+export class KanbanBoardComponent implements OnInit {
   kanbanBoardColumns$ = this.taskService.kanbanBoardColumns$;
 
   private draggedTask: DraggedTask | undefined;
+  private showCreateTaskDialog$ = this.taskService.showCreateTaskDialog$
 
-  constructor(private taskService: TaskService) {}
+  constructor(private taskService: TaskService, public dialog: MatDialog) {}
+
+  ngOnInit() {
+    this.showCreateTaskDialog$.subscribe(showCreateTaskDialog => {
+      if (showCreateTaskDialog) {
+        this.dialog.open(TaskDetailsDialogComponent, {data: {} });
+      }
+    })
+  }
 
   toggleCreateTaskDialogShow(show: boolean, columnId: string) {
     this.taskService.toggleCreateTaskDialogShow(show, columnId);

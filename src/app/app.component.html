@@ -1,9 +1,4 @@
 <div class="page-container">
-  <div class="page-container__title">
-    <h1>{{ title }}</h1>
-  </div>
-  <app-kanban-board  class="page-container__kanban-board"/>
-  <app-create-task-dialog
-    [show]="(showCreateTaskDialog$ | async) ?? false"
-    (exit)="exitCreateTaskDialogShow()"/>
+  <app-toolbar/>
+  <app-kanban-board class="page-container__kanban-board" />
 </div>

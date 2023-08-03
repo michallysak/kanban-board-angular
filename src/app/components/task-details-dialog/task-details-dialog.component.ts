@@ -1,30 +1,24 @@
-import {
-  trigger,
-  transition,
-  style,
-  animate,
-  state,
-} from '@angular/animations';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { TaskService } from '../services/task.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TaskService } from '../../services/task.service';
 
 @Component({
-  selector: 'app-create-task-dialog',
-  templateUrl: './create-task-dialog.component.html',
-  styleUrls: ['./create-task-dialog.component.scss'],
-  animations: [
-    trigger('fade', [
-      state('false', style({ opacity: 0, visible: 'hidden', display: 'none' })),
-      state('true', style({ opacity: 1, visible: 'visible' })),
-      transition('false => true', [animate(250)]),
-      transition('true => false', [animate(250)]),
-    ]),
-  ],
+  selector: 'app-task-details-dialog',
+  templateUrl: './task-details-dialog.component.html',
+  styleUrls: ['./task-details-dialog.component.scss']
 })
-export class CreateTaskDialogComponent implements OnInit {
+export class TaskDetailsDialogComponent implements OnInit {
+
+  ngOnInit() {
+    this.form.valueChanges.subscribe(x => console.log(x));
+    this.createTaskDialogDefualtColumn$.subscribe(
+      createTaskDialogDefualtColumn =>
+        this.form.patchValue({ column: createTaskDialogDefualtColumn })
+    );
+  }
+
   @Input({ required: true }) show = false;
-  @Output() exit = new EventEmitter<void>();
 
   kanbanBoardColumnsNamesAndIds$ =
     this.taskService.kanbanBoardColumnsNamesAndIds$;
@@ -33,7 +27,9 @@ export class CreateTaskDialogComponent implements OnInit {
 
   constructor(
     public fb: FormBuilder,
-    private taskService: TaskService
+    private taskService: TaskService,
+    public dialogRef: MatDialogRef<TaskDetailsDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: object,
   ) {}
 
   form = this.fb.group({
@@ -50,13 +46,6 @@ export class CreateTaskDialogComponent implements OnInit {
     column: ['', Validators.required],
   });
 
-  ngOnInit() {
-    this.form.valueChanges.subscribe(x => console.log(x));
-    this.createTaskDialogDefualtColumn$.subscribe(
-      createTaskDialogDefualtColumn =>
-        this.form.patchValue({ column: createTaskDialogDefualtColumn })
-    );
-  }
 
   onSubmit() {
     if (this.form.valid) {
@@ -66,21 +55,21 @@ export class CreateTaskDialogComponent implements OnInit {
         description: this.form.controls.description.value,
       })
       console.log(this.form.value);
-      this.exitAndClearForm();
+      this.closeDialogAndClearForm();
     }
   }
 
   clickClose() {
-    this.exitAndClearForm();
+    this.closeDialogAndClearForm();
   }
 
   clickOutside() {
-    this.exitAndClearForm();
+    this.closeDialogAndClearForm();
   }
 
-  exitAndClearForm() {
-    this.exit.emit();
+  closeDialogAndClearForm() {
     this.form.reset();
+    this.dialogRef.close();
   }
 
   clickInside(event: Event) {
@@ -89,7 +78,7 @@ export class CreateTaskDialogComponent implements OnInit {
 
   handleKeyUp(event: KeyboardEvent) {
     if (event.key === 'Escape') {
-      this.exitAndClearForm();
+      this.closeDialogAndClearForm();
     }
   }
 }

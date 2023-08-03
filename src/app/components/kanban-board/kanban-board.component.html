@@ -2,7 +2,9 @@
   <div class="kanban-board__column" *ngFor="let column of kanbanBoardColumns$ | async">
     <div class="kanban-board__header">
       <h3 class="kanban-board__title">{{ column.name }}</h3>
-      <button class="kanban-board__add-button" (click)="toggleCreateTaskDialogShow(true, column.id)">on</button>
+      <button  class="kanban-board__add-button" (click)="toggleCreateTaskDialogShow(true, column.id)" mat-icon-button>
+        <mat-icon>add</mat-icon>
+      </button>
     </div>
     <div style="display: flex; flex-direction: column;">
     <ng-container *ngFor="let task of column.tasks">

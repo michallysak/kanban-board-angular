@@ -4,10 +4,10 @@ import {
   DraggedTask,
   KanbanBoardColumn,
   KanbanBoardColumnTasks,
-} from '../kanban-board/kanban-board.model';
+} from '../components/kanban-board/kanban-board.model';
 import { initialKanbanBoardColumn } from './task-service.data';
-import { MoveTask } from '../dropzone/dropzone.model';
-import { TaskCard } from '../task-card/task-card.model';
+import { MoveTask } from '../components/dropzone/dropzone.model';
+import { TaskCard } from '../components/task-card/task-card.model';
 import { CreateTask } from './task-service.model';
 
 @Injectable({

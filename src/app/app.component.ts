@@ -7,7 +7,6 @@ import { TaskService } from './services/task.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'KanbanBoardAngular';
   showCreateTaskDialog$ = this.taskService.showCreateTaskDialog$;
 
   constructor(private taskService: TaskService) {}
