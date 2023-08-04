@@ -55,7 +55,7 @@ export class TaskService {
   }
 
   private generateUuid() {
-    return crypto.randomUUID()
+    return crypto.randomUUID();
   }
 
   toggleCreateTaskDialogShow(

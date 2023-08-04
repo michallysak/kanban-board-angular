@@ -15,16 +15,19 @@ export class KanbanBoardComponent implements OnInit {
   kanbanBoardColumns$ = this.taskService.kanbanBoardColumns$;
 
   private draggedTask: DraggedTask | undefined;
-  private showCreateTaskDialog$ = this.taskService.showCreateTaskDialog$
+  private showCreateTaskDialog$ = this.taskService.showCreateTaskDialog$;
 
-  constructor(private taskService: TaskService, public dialog: MatDialog) {}
+  constructor(
+    private taskService: TaskService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.showCreateTaskDialog$.subscribe(showCreateTaskDialog => {
       if (showCreateTaskDialog) {
-        this.dialog.open(TaskDetailsDialogComponent, {data: {} });
+        this.dialog.open(TaskDetailsDialogComponent, { data: {} });
       }
-    })
+    });
   }
 
   toggleCreateTaskDialogShow(show: boolean, columnId: string) {

@@ -3,16 +3,26 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "plugins": [
+    "change-detection-strategy"
+  ],
   "overrides": [
     {
       "files": [
         "*.ts"
       ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ]
+      },
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:@ngrx/eslint-plugin/recommended",
+        "prettier"
       ],
       "rules": {
         "@angular-eslint/directive-selector": [
@@ -30,7 +40,15 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@typescript-eslint/no-empty-interface": [
+          "error",
+          {
+            "allowSingleExtends": true
+          }
+        ],
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+        "change-detection-strategy/on-push": "error"
       }
     },
     {
@@ -38,8 +56,7 @@
         "*.html"
       ],
       "extends": [
-        "plugin:@angular-eslint/template/recommended",
-        "plugin:@angular-eslint/template/accessibility"
+        "plugin:@angular-eslint/template/recommended"
       ],
       "rules": {}
     }

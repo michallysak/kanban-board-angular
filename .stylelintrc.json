@@ -1,0 +1,8 @@
+{
+  "ignoreFiles": ["**/*.ts"],
+  "extends": "stylelint-config-standard-scss",
+  "rules": {
+    "alpha-value-notation": ["number"],
+    "no-empty-source": null
+  }
+}

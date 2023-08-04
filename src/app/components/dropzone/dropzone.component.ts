@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MoveTask } from './dropzone.model';
 
 @Component({
   selector: 'app-dropzone',
@@ -30,5 +29,4 @@ export class DropzoneComponent {
   dragLeave() {
     this.dragover = false;
   }
-
 }

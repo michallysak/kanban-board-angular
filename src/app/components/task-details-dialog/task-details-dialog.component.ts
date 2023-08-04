@@ -6,10 +6,9 @@ import { TaskService } from '../../services/task.service';
 @Component({
   selector: 'app-task-details-dialog',
   templateUrl: './task-details-dialog.component.html',
-  styleUrls: ['./task-details-dialog.component.scss']
+  styleUrls: ['./task-details-dialog.component.scss'],
 })
 export class TaskDetailsDialogComponent implements OnInit {
-
   ngOnInit() {
     this.form.valueChanges.subscribe(x => console.log(x));
     this.createTaskDialogDefualtColumn$.subscribe(
@@ -29,7 +28,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     public fb: FormBuilder,
     private taskService: TaskService,
     public dialogRef: MatDialogRef<TaskDetailsDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: object,
+    @Inject(MAT_DIALOG_DATA) public data: object
   ) {}
 
   form = this.fb.group({
@@ -46,14 +45,13 @@ export class TaskDetailsDialogComponent implements OnInit {
     column: ['', Validators.required],
   });
 
-
   onSubmit() {
     if (this.form.valid) {
       this.taskService.createTask({
         columnId: this.form.controls.column.value ?? '',
         title: this.form.controls.title.value,
         description: this.form.controls.description.value,
-      })
+      });
       console.log(this.form.value);
       this.closeDialogAndClearForm();
     }

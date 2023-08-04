@@ -8,7 +8,7 @@ describe('DropzoneComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DropzoneComponent]
+      declarations: [DropzoneComponent],
     });
     fixture = TestBed.createComponent(DropzoneComponent);
     component = fixture.componentInstance;

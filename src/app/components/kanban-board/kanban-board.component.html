@@ -1,22 +1,29 @@
 <div class="kanban-board">
-  <div class="kanban-board__column" *ngFor="let column of kanbanBoardColumns$ | async">
+  <div
+    class="kanban-board__column"
+    *ngFor="let column of kanbanBoardColumns$ | async">
     <div class="kanban-board__header">
       <h3 class="kanban-board__title">{{ column.name }}</h3>
-      <button  class="kanban-board__add-button" (click)="toggleCreateTaskDialogShow(true, column.id)" mat-icon-button>
+      <button
+        class="kanban-board__add-button"
+        (click)="toggleCreateTaskDialogShow(true, column.id)"
+        mat-icon-button>
         <mat-icon>add</mat-icon>
       </button>
     </div>
-    <div style="display: flex; flex-direction: column;">
-    <ng-container *ngFor="let task of column.tasks">
-      <app-dropzone
-        (itemDrop)="taskDrop({ columnId: column.id, type: 'before', id: task.id })" />
-      <app-task-card
-        (dragTask)="taskDragged(column.id, task.id)"
-        [taskCard]="task" />
-    </ng-container>
+    <div style="display: flex; flex-direction: column">
+      <ng-container *ngFor="let task of column.tasks">
+        <app-dropzone
+          (itemDrop)="
+            taskDrop({ columnId: column.id, type: 'before', id: task.id })
+          " />
+        <app-task-card
+          (dragTask)="taskDragged(column.id, task.id)"
+          [taskCard]="task" />
+      </ng-container>
     </div>
     <app-dropzone
-     class="kanban-board__column__last-dropzone"
+      class="kanban-board__column__last-dropzone"
       [fullHeight]="true"
       (itemDrop)="taskDrop({ columnId: column.id, type: 'end' })" />
   </div>
