@@ -34,12 +34,10 @@ export class TaskDetailsDialogComponent implements OnInit {
   form = this.fb.group({
     title: this.fb.nonNullable.control('', [
       Validators.required,
-      Validators.minLength(4),
+      Validators.minLength(3),
       Validators.maxLength(10),
     ]),
     description: this.fb.nonNullable.control('', [
-      Validators.required,
-      Validators.minLength(4),
       Validators.maxLength(10),
     ]),
     column: ['', Validators.required],

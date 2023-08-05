@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TaskService } from './services/task.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -7,11 +7,10 @@ import { TaskService } from './services/task.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  showCreateTaskDialog$ = this.taskService.showCreateTaskDialog$;
 
-  constructor(private taskService: TaskService) {}
-
-  exitCreateTaskDialogShow() {
-    this.taskService.toggleCreateTaskDialogShow(false);
+  constructor(translateService: TranslateService) {
+    translateService.setDefaultLang('en');
+    translateService.use(translateService.getBrowserLang() || 'en');
   }
+
 }

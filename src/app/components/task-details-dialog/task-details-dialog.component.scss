@@ -1,38 +1,25 @@
 .task-details-dialog {
+  min-width: 250px;
+  min-height: 350px;
+
   &__content {
-    padding: 5px;
-    width: 600px;
-    height: 425px;
-
-    &__header {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    &__body {
-      display: flex;
-      flex-direction: column;
-    }
+    padding: 5px 15px;
+    display: flex;
+    flex-direction: column;
 
     &__form {
-      width: 95%;
-      margin: auto;
-
       &-control {
         width: 100%;
 
         &.footer {
           margin-bottom: 15px;
         }
+      }
 
-        > * {
-          width: 100%;
-        }
-
-        &.submit {
-          width: 25%;
-          margin: auto;
-        }
+      &-submit {
+        width: 100%;
+        margin: auto;
+        justify-content: center !important;
       }
     }
   }
