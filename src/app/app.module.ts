@@ -8,26 +8,15 @@ import { TaskCardComponent } from './components/task-card/task-card.component';
 import { DropzoneComponent } from './components/dropzone/dropzone.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { TaskDetailsDialogComponent } from './components/task-details-dialog/task-details-dialog.component';
-import { MatInputModule } from '@angular/material/input';
-import {
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
-  MatFormFieldModule,
-} from '@angular/material/form-field';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
-import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {
   TranslateModule,
   TranslateLoader,
-  TranslateService,
 } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { AngularMaterialModule } from './angular-material.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -46,16 +35,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    AngularMaterialModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
     FormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatDialogModule,
-    MatToolbarModule,
-    MatSelectModule,
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -65,12 +47,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       },
     }),
   ],
-  providers: [
-    {
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
-      useValue: { appearance: 'outline' },
-    },
-  ],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
