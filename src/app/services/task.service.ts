@@ -2,28 +2,32 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   Observable,
+  catchError,
+  exhaustMap,
+  forkJoin,
   map,
+  of,
+  switchMap,
   take,
   tap,
+  throwError,
 } from 'rxjs';
 import {
   DraggedTask,
   KanbanBoardColumn,
   KanbanBoardColumnTasks,
 } from '../components/kanban-board/kanban-board.model';
-import { initialKanbanBoardColumn } from './task-service.data';
 import { MoveTask } from '../components/dropzone/dropzone.model';
 import { TaskCard } from '../components/task-card/task-card.model';
 import { CreateTask } from './task-service.model';
 import { TaskDetailsDialogState } from '../components/task-details-dialog/task-details-dialog.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  kanbanBoardColumns$ = new BehaviorSubject<KanbanBoardColumnTasks[]>(
-    initialKanbanBoardColumn
-  );
+  kanbanBoardColumns$ = new BehaviorSubject<KanbanBoardColumnTasks[]>([]);
 
   showCreateTaskDialog$ = new BehaviorSubject<boolean>(false);
   taskDetailsDialogState$ = new BehaviorSubject<TaskDetailsDialogState>(
@@ -37,6 +41,52 @@ export class TaskService {
       )
     );
 
+  constructor(private httpClient: HttpClient) {}
+  api = 'http://localhost:3001/api';
+
+  loadBoardColumns() {
+    this.httpClient
+      .get<KanbanBoardColumn[]>(`${this.api}/table`, { observe: 'response' })
+      .pipe(
+        switchMap(response => {
+          if (response.status !== 200 || !response.body) {
+            console.error('');
+            throw new Error('');
+          }
+
+          const kanbanBoardColumns = response.body;
+
+          return forkJoin(
+            kanbanBoardColumns.map(column =>
+              this.loadTaskForColumn(column.id).pipe(
+                map(tasks => ({ ...column, tasks }))
+              )
+            )
+          );
+        })
+      )
+      .subscribe(d => this.kanbanBoardColumns$.next(d));
+  }
+
+  loadTaskForColumn(columnId: string) {
+    return this.httpClient
+      .get<TaskCard[]>(`${this.api}/table/${columnId}/task`, {
+        observe: 'response',
+      })
+      .pipe(
+        map(response => {
+          if (response.status !== 200 || !response.body) {
+            throw new Error(
+              `Error while get task for table with id ${columnId} Response: ${response.status} ${response.statusText}, body: ${response.body}`
+            );
+          }
+          const tasks = response.body;
+
+          return tasks;
+        })
+      );
+  }
+
   editTask(editTask: {
     taskId: string;
     columnId: string;
@@ -44,7 +94,10 @@ export class TaskService {
     description: string;
   }) {
     this.kanbanBoardColumns$.pipe(take(1)).subscribe(kanbanBoardColumns => {
-      let destinationColumnId: string | undefined = this.findTaskColumnId(kanbanBoardColumns, editTask);
+      let destinationColumnId: string | undefined = this.findTaskColumnId(
+        kanbanBoardColumns,
+        editTask
+      );
 
       if (!destinationColumnId) {
         return;
@@ -53,12 +106,24 @@ export class TaskService {
       if (editTask.columnId === destinationColumnId) {
         this.editTaskSameColumn(kanbanBoardColumns, editTask);
       } else {
-        this.editTaskDifferentColum(kanbanBoardColumns, destinationColumnId, editTask);
+        this.editTaskDifferentColum(
+          kanbanBoardColumns,
+          destinationColumnId,
+          editTask
+        );
       }
     });
   }
 
-  private findTaskColumnId(kanbanBoardColumns: KanbanBoardColumnTasks[], editTask: { taskId: string; columnId: string; title: string; description: string; }) {
+  private findTaskColumnId(
+    kanbanBoardColumns: KanbanBoardColumnTasks[],
+    editTask: {
+      taskId: string;
+      columnId: string;
+      title: string;
+      description: string;
+    }
+  ) {
     let destinationColumnId: string | undefined;
     for (const column of kanbanBoardColumns) {
       const ftask = column.tasks.find(
@@ -70,7 +135,16 @@ export class TaskService {
     return destinationColumnId;
   }
 
-  private editTaskDifferentColum(kanbanBoardColumns: KanbanBoardColumnTasks[], findtaskcolumnId: string | undefined, editTask: { taskId: string; columnId: string; title: string; description: string; }) {
+  private editTaskDifferentColum(
+    kanbanBoardColumns: KanbanBoardColumnTasks[],
+    findtaskcolumnId: string | undefined,
+    editTask: {
+      taskId: string;
+      columnId: string;
+      title: string;
+      description: string;
+    }
+  ) {
     const edited = kanbanBoardColumns.map(column => {
       if (column.id === findtaskcolumnId) {
         return {
@@ -88,7 +162,15 @@ export class TaskService {
     this.createTask(editTask);
   }
 
-  private editTaskSameColumn(kanbanBoardColumns: KanbanBoardColumnTasks[], editTask: { taskId: string; columnId: string; title: string; description: string; }) {
+  private editTaskSameColumn(
+    kanbanBoardColumns: KanbanBoardColumnTasks[],
+    editTask: {
+      taskId: string;
+      columnId: string;
+      title: string;
+      description: string;
+    }
+  ) {
     const edited = kanbanBoardColumns.map(column => {
       return {
         id: column.id,

@@ -23,6 +23,7 @@ export class KanbanBoardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.taskService.loadBoardColumns();
     this.showCreateTaskDialog$.subscribe(showCreateTaskDialog => {
       if (showCreateTaskDialog) {
         this.dialog.open(TaskDetailsDialogComponent, { data: {} });
@@ -31,11 +32,11 @@ export class KanbanBoardComponent implements OnInit {
   }
 
   addTaskClick(columnId: string) {
-    this.taskService.toggleCreateTaskDialogShow({type: 'new', columnId})
+    this.taskService.toggleCreateTaskDialogShow({ type: 'new', columnId });
   }
 
   taskClick(taskId: string) {
-    this.taskService.toggleCreateTaskDialogShow({type: 'existing', taskId})
+    this.taskService.toggleCreateTaskDialogShow({ type: 'existing', taskId });
   }
 
   taskDragged(columnId: string, taskId: string) {
