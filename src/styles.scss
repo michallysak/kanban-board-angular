@@ -7,5 +7,20 @@ body {
   margin: 0;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+// disable user selection and hover over floating label
+.mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label {
+  pointer-events: none !important;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}

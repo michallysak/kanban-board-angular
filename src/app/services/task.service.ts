@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  map,
+  take,
+  tap,
+} from 'rxjs';
 import {
   DraggedTask,
   KanbanBoardColumn,
@@ -9,6 +15,7 @@ import { initialKanbanBoardColumn } from './task-service.data';
 import { MoveTask } from '../components/dropzone/dropzone.model';
 import { TaskCard } from '../components/task-card/task-card.model';
 import { CreateTask } from './task-service.model';
+import { TaskDetailsDialogState } from '../components/task-details-dialog/task-details-dialog.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +26,7 @@ export class TaskService {
   );
 
   showCreateTaskDialog$ = new BehaviorSubject<boolean>(false);
-  createTaskDialogDefualtColumn$ = new BehaviorSubject<string | undefined>(
+  taskDetailsDialogState$ = new BehaviorSubject<TaskDetailsDialogState>(
     undefined
   );
 
@@ -29,6 +36,77 @@ export class TaskService {
         kanbanBoardColumns.map(({ id, name }) => ({ id, name }))
       )
     );
+
+  editTask(editTask: {
+    taskId: string;
+    columnId: string;
+    title: string;
+    description: string;
+  }) {
+    this.kanbanBoardColumns$.pipe(take(1)).subscribe(kanbanBoardColumns => {
+      let destinationColumnId: string | undefined = this.findTaskColumnId(kanbanBoardColumns, editTask);
+
+      if (!destinationColumnId) {
+        return;
+      }
+
+      if (editTask.columnId === destinationColumnId) {
+        this.editTaskSameColumn(kanbanBoardColumns, editTask);
+      } else {
+        this.editTaskDifferentColum(kanbanBoardColumns, destinationColumnId, editTask);
+      }
+    });
+  }
+
+  private findTaskColumnId(kanbanBoardColumns: KanbanBoardColumnTasks[], editTask: { taskId: string; columnId: string; title: string; description: string; }) {
+    let destinationColumnId: string | undefined;
+    for (const column of kanbanBoardColumns) {
+      const ftask = column.tasks.find(
+        taskCard => taskCard.id === editTask.taskId
+      );
+      destinationColumnId = ftask ? column.id : undefined;
+      break;
+    }
+    return destinationColumnId;
+  }
+
+  private editTaskDifferentColum(kanbanBoardColumns: KanbanBoardColumnTasks[], findtaskcolumnId: string | undefined, editTask: { taskId: string; columnId: string; title: string; description: string; }) {
+    const edited = kanbanBoardColumns.map(column => {
+      if (column.id === findtaskcolumnId) {
+        return {
+          id: column.id,
+          name: column.name,
+          tasks: column.tasks.filter(task => {
+            task.id !== editTask.taskId;
+          }),
+        };
+      }
+
+      return column;
+    });
+    this.kanbanBoardColumns$.next(edited);
+    this.createTask(editTask);
+  }
+
+  private editTaskSameColumn(kanbanBoardColumns: KanbanBoardColumnTasks[], editTask: { taskId: string; columnId: string; title: string; description: string; }) {
+    const edited = kanbanBoardColumns.map(column => {
+      return {
+        id: column.id,
+        name: column.name,
+        tasks: column.tasks.map(task => {
+          if (task.id === editTask.taskId) {
+            return {
+              id: editTask.taskId,
+              title: editTask.title,
+              description: editTask.description,
+            };
+          }
+          return task;
+        }),
+      };
+    });
+    this.kanbanBoardColumns$.next(edited);
+  }
 
   createTask(createTask: CreateTask) {
     this.kanbanBoardColumns$.pipe(take(1)).subscribe(kanbanBoardColumns => {
@@ -40,7 +118,7 @@ export class TaskService {
             tasks: [
               ...column.tasks,
               {
-                id: this.generateUuid(),
+                id: createTask.taskId ?? this.generateUuid(),
                 title: createTask.title,
                 description: createTask.description,
               },
@@ -58,12 +136,26 @@ export class TaskService {
     return crypto.randomUUID();
   }
 
-  toggleCreateTaskDialogShow(
-    show: boolean,
-    columnId: string | undefined = undefined
-  ) {
-    this.createTaskDialogDefualtColumn$.next(columnId);
-    this.showCreateTaskDialog$.next(show);
+  toggleCreateTaskDialogShow(state: TaskDetailsDialogState) {
+    this.taskDetailsDialogState$.next(state);
+    this.showCreateTaskDialog$.next(true);
+  }
+
+  getTask(taskId: string) {
+    return this.kanbanBoardColumns$.pipe(
+      map((columns: KanbanBoardColumnTasks[]) => {
+        for (const column of columns) {
+          const task = column.tasks.find(taskCard => taskCard.id === taskId);
+          if (task) {
+            return {
+              ...task,
+              columnId: column.id,
+            };
+          }
+        }
+        return undefined;
+      })
+    );
   }
 
   moveTaskBetweenColumns(

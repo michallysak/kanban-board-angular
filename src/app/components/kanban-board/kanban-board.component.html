@@ -6,7 +6,7 @@
       <h3 class="kanban-board__title">{{ column.name }}</h3>
       <button
         class="kanban-board__add-button"
-        (click)="toggleCreateTaskDialogShow(true, column.id)"
+        (click)="addTaskClick(column.id)"
         mat-icon-button>
         <mat-icon>add</mat-icon>
       </button>
@@ -18,6 +18,7 @@
             taskDrop({ columnId: column.id, type: 'before', id: task.id })
           " />
         <app-task-card
+          (clickTask)="taskClick(task.id)"
           (dragTask)="taskDragged(column.id, task.id)"
           [taskCard]="task" />
       </ng-container>

@@ -1,7 +1,8 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { TaskService } from '../../services/task.service';
+import { TaskDetailsMode } from './task-details-dialog.model';
 
 @Component({
   selector: 'app-task-details-dialog',
@@ -9,27 +10,14 @@ import { TaskService } from '../../services/task.service';
   styleUrls: ['./task-details-dialog.component.scss'],
 })
 export class TaskDetailsDialogComponent implements OnInit {
-  ngOnInit() {
-    this.form.valueChanges.subscribe(x => console.log(x));
-    this.createTaskDialogDefualtColumn$.subscribe(
-      createTaskDialogDefualtColumn =>
-        this.form.patchValue({ column: createTaskDialogDefualtColumn })
-    );
-  }
+  mode: TaskDetailsMode = 'view';
+  currentTask = { taskId: '', columnId: '' };
 
   @Input({ required: true }) show = false;
 
   kanbanBoardColumnsNamesAndIds$ =
     this.taskService.kanbanBoardColumnsNamesAndIds$;
-  createTaskDialogDefualtColumn$ =
-    this.taskService.createTaskDialogDefualtColumn$;
-
-  constructor(
-    public fb: FormBuilder,
-    private taskService: TaskService,
-    public dialogRef: MatDialogRef<TaskDetailsDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: object
-  ) {}
+  createTaskDialogDefualtColumn$ = this.taskService.taskDetailsDialogState$;
 
   form = this.fb.group({
     title: this.fb.nonNullable.control('', [
@@ -37,22 +25,86 @@ export class TaskDetailsDialogComponent implements OnInit {
       Validators.minLength(3),
       Validators.maxLength(10),
     ]),
-    description: this.fb.nonNullable.control('', [
-      Validators.maxLength(10),
-    ]),
+    description: this.fb.nonNullable.control('', [Validators.maxLength(10)]),
     column: ['', Validators.required],
   });
 
+  constructor(
+    public fb: FormBuilder,
+    private taskService: TaskService,
+    public dialogRef: MatDialogRef<TaskDetailsDialogComponent>,
+  ) {}
+
+  ngOnInit() {
+    this.createTaskDialogDefualtColumn$.subscribe(
+      createTaskDialogDefualtColumn => {
+        if (!createTaskDialogDefualtColumn) {
+          this.form.reset();
+          return;
+        }
+        if (createTaskDialogDefualtColumn.type === 'new') {
+          this.mode = 'create';
+          this.form.patchValue({
+            column: createTaskDialogDefualtColumn.columnId,
+          });
+
+          this.currentTask = {
+            taskId: '',
+            columnId: createTaskDialogDefualtColumn.columnId,
+          };
+        }
+        if (createTaskDialogDefualtColumn.type === 'existing') {
+          this.updateFormWithTask(createTaskDialogDefualtColumn.taskId);
+        }
+      }
+    );
+  }
+
+  updateFormWithTask(taskId: string) {
+    this.taskService.getTask(taskId).subscribe(task => {
+      if (!task) {
+        return;
+      }
+      this.mode = 'view';
+      const { id: taskId, title, columnId: column, description } = task;
+      this.form.patchValue({ title, column, description });
+      this.currentTask = { taskId, columnId: task.columnId };
+    });
+  }
+
+  setEditMode() {
+    this.mode = 'edit';
+  }
+
   onSubmit() {
     if (this.form.valid) {
-      this.taskService.createTask({
-        columnId: this.form.controls.column.value ?? '',
-        title: this.form.controls.title.value,
-        description: this.form.controls.description.value,
-      });
-      console.log(this.form.value);
-      this.closeDialogAndClearForm();
+      switch (this.mode) {
+        case 'create':
+          this.taskService.createTask({
+            columnId: this.form.controls.column.value ?? '',
+            title: this.form.controls.title.value,
+            description: this.form.controls.description.value,
+          });
+          this.closeDialogAndClearForm();
+          break;
+        case 'edit':
+          this.taskService.editTask({
+            taskId: this.currentTask.taskId,
+            columnId: this.form.controls.column.value ?? '',
+            title: this.form.controls.title.value,
+            description: this.form.controls.description.value,
+          });
+          this.mode = 'view';
+          break;
+        case 'view':
+          break;
+      }
     }
+  }
+
+  cancelEdit() {
+    this.mode = 'view';
+    this.updateFormWithTask(this.currentTask.taskId);
   }
 
   clickClose() {

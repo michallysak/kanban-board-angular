@@ -30,8 +30,12 @@ export class KanbanBoardComponent implements OnInit {
     });
   }
 
-  toggleCreateTaskDialogShow(show: boolean, columnId: string) {
-    this.taskService.toggleCreateTaskDialogShow(show, columnId);
+  addTaskClick(columnId: string) {
+    this.taskService.toggleCreateTaskDialogShow({type: 'new', columnId})
+  }
+
+  taskClick(taskId: string) {
+    this.taskService.toggleCreateTaskDialogShow({type: 'existing', taskId})
   }
 
   taskDragged(columnId: string, taskId: string) {

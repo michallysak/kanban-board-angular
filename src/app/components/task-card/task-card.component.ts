@@ -10,8 +10,14 @@ export class TaskCardComponent {
   @Input({ required: true }) taskCard!: TaskCard;
 
   @Output() dragTask = new EventEmitter<void>();
+  @Output() clickTask = new EventEmitter<void>();
 
   dragStart() {
     this.dragTask.emit();
   }
+
+  click() {
+    this.clickTask.emit();
+  }
+
 }

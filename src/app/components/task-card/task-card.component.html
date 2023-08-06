@@ -2,6 +2,7 @@
   appearance="outlined"
   class="task-card"
   draggable="true"
+  (click)="click()"
   (dragstart)="dragStart()">
   <mat-card-content class="task-card__title">{{
     taskCard.title

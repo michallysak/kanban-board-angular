@@ -1,7 +1,11 @@
 {
   "app_name": "Kanban Board | Angular",
   "create_new_task_dialog": {
-    "title": "Add new task",
+    "title": {
+      "create": "Add new task",
+      "edit": "Edit task",
+      "view": "Task details"
+    },
     "form": {
       "title": {
         "label": "Title",
@@ -15,6 +19,12 @@
         "hint": "Max {{max}} characters"
       },
       "button": "Create"
+    },
+    "button": {
+      "create": "Create",
+      "save": "Save",
+      "edit": "Edit",
+      "cancel": "Cancel"
     }
   }
 }

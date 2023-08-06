@@ -1,7 +1,11 @@
 {
   "app_name": "Tablica Kanban | Angular",
   "create_new_task_dialog": {
-    "title": "Dodaj nowe zadanie",
+    "title": {
+      "create": "Dodaj nowe zadanie",
+      "edit": "Edytuj zadanie",
+      "view": "Szczegóły zadania"
+    },
     "form": {
       "title": {
         "label": "Nazwa",
@@ -15,6 +19,11 @@
         "hint": "Maksymalnie {{max}} znaków"
       }
     },
-    "button": "Utwórz"
+    "button": {
+      "create": "Utwórz",
+      "save": "Zapisz",
+      "edit": "Edytuj",
+      "cancel": "Anuluj"
+    }
   }
 }
